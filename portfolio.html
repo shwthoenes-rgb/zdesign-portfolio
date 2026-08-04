@@ -17,15 +17,13 @@ body {
 
 #viewer {
     width: 100%;
-    max-width: 1400px;
-    margin: auto;
 }
 
 canvas {
     display: block;
     width: 100%;
     height: auto;
-    margin-bottom: 30px;
+    margin: 0 auto 30px;
 }
 
 </style>
@@ -40,63 +38,66 @@ canvas {
 
 <script type="module">
 
-import * as pdfjsLib from './pdfjs/pdf.mjs';
+import * as pdfjsLib from "./pdfjs/pdf.mjs";
 
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
-'./pdfjs/pdf.worker.mjs';
+"./pdfjs/pdf.worker.mjs";
 
 
-const url = './portfolio.pdf';
-
-const viewer = document.getElementById('viewer');
+const viewer = document.getElementById("viewer");
 
 
-const pdf = await pdfjsLib.getDocument(url).promise;
+async function renderPDF() {
 
-
-for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
-
-
-    const page = await pdf.getPage(pageNumber);
-
-
-    const containerWidth = viewer.clientWidth;
-
-
-    const viewportOriginal = page.getViewport({
-        scale: 1
-    });
-
-
-    const scale = containerWidth / viewportOriginal.width;
-
-
-    const viewport = page.getViewport({
-        scale: scale
-    });
-
-
-    const canvas = document.createElement('canvas');
-
-    const context = canvas.getContext('2d');
-
-
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-
-
-    viewer.appendChild(canvas);
-
-
-    await page.render({
-        canvasContext: context,
-        viewport: viewport
+    const pdf = await pdfjsLib.getDocument({
+        url: "./portfolio.pdf",
+        useWorkerFetch: true,
+        isEvalSupported: true
     }).promise;
 
 
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+
+        const page = await pdf.getPage(pageNum);
+
+
+        const viewport = page.getViewport({
+            scale: 1
+        });
+
+
+        const scale = window.innerWidth / viewport.width;
+
+
+        const scaledViewport = page.getViewport({
+            scale: scale
+        });
+
+
+        const canvas = document.createElement("canvas");
+
+        const context = canvas.getContext("2d");
+
+
+        canvas.width = scaledViewport.width;
+        canvas.height = scaledViewport.height;
+
+
+        viewer.appendChild(canvas);
+
+
+        await page.render({
+            canvasContext: context,
+            viewport: scaledViewport
+        }).promise;
+
+    }
+
 }
 
+
+renderPDF();
 
 </script>
 
