@@ -67,7 +67,7 @@ async function renderPDF() {
         });
 
 
-        const scale = window.innerWidth / viewport.width;
+        const scale = (window.innerWidth / viewport.width) * 2;
 
 
         const scaledViewport = page.getViewport({
