@@ -17,13 +17,15 @@ body {
 
 #viewer {
     width: 100%;
+    max-width: 1600px;
+    margin: auto;
 }
 
 canvas {
     display: block;
     width: 100%;
     height: auto;
-    margin: 0 auto 30px;
+    margin-bottom: 40px;
 }
 
 </style>
@@ -50,29 +52,29 @@ const viewer = document.getElementById("viewer");
 
 async function renderPDF() {
 
-    const pdf = await pdfjsLib.getDocument({
-        url: "./portfolio.pdf",
-        useWorkerFetch: true,
-        isEvalSupported: true
-    }).promise;
+
+    const pdf = await pdfjsLib.getDocument("./portfolio.pdf").promise;
 
 
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
 
+
         const page = await pdf.getPage(pageNum);
 
 
-        const viewport = page.getViewport({
+        const baseViewport = page.getViewport({
             scale: 1
         });
 
 
-        const scale = window.innerWidth / viewport.width;
+        const scale = 2.5;
 
-
-        const scaledViewport = page.getViewport({
+        const viewport = page.getViewport({
             scale: scale
         });
+
+
+        const outputScale = window.devicePixelRatio || 1;
 
 
         const canvas = document.createElement("canvas");
@@ -80,27 +82,42 @@ async function renderPDF() {
         const context = canvas.getContext("2d");
 
 
-        canvas.width = scaledViewport.width;
-        canvas.height = scaledViewport.height;
+        canvas.width = Math.floor(viewport.width * outputScale);
+        canvas.height = Math.floor(viewport.height * outputScale);
+
+
+        canvas.style.width = "100%";
 
 
         viewer.appendChild(canvas);
 
 
+        const transform = outputScale !== 1
+            ? [outputScale, 0, 0, outputScale, 0, 0]
+            : null;
+
+
         await page.render({
+
             canvasContext: context,
-            viewport: scaledViewport
+            viewport: viewport,
+            transform: transform
+
         }).promise;
 
+
     }
+
 
 }
 
 
 renderPDF();
 
+
 </script>
 
 
 </body>
+
 </html>
