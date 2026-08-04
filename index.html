@@ -3,19 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Design Portfolio | Zebsch</title>
+
+<title>Design Portfolio</title>
 
 <style>
 html, body {
     margin: 0;
     height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
     background: #ffffff;
 }
 
-iframe {
-    width: 100%;
-    height: 100vh;
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-box {
+    text-align: center;
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 30px;
+}
+
+input {
+    padding: 12px;
+    width: 220px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+}
+
+button {
+    margin-top: 15px;
+    padding: 12px 30px;
+    font-size: 16px;
+    background: #111;
+    color: white;
     border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #333;
+}
+
+#error {
+    color: #c00;
+    margin-top: 15px;
 }
 </style>
 
@@ -23,7 +61,34 @@ iframe {
 
 <body>
 
-<iframe src="portfolio.pdf"></iframe>
+<div class="login-box">
+
+<h1>Design Portfolio</h1>
+
+<input type="password" id="password" placeholder="Passwort">
+
+<br>
+
+<button onclick="checkPassword()">Öffnen</button>
+
+<p id="error"></p>
+
+</div>
+
+
+<script>
+function checkPassword() {
+
+    const password = document.getElementById("password").value;
+
+    if (password === "design2026") {
+        window.location.href = "portfolio.pdf";
+    } else {
+        document.getElementById("error").innerHTML = "Falsches Passwort";
+    }
+
+}
+</script>
 
 </body>
 </html>
