@@ -52,7 +52,6 @@ const viewer = document.getElementById("viewer");
 
 async function renderPDF() {
 
-
     const pdf = await pdfjsLib.getDocument("./portfolio.pdf").promise;
 
 
@@ -62,19 +61,12 @@ async function renderPDF() {
         const page = await pdf.getPage(pageNum);
 
 
-        const baseViewport = page.getViewport({
-            scale: 1
-        });
-
-
         const scale = 2.5;
+
 
         const viewport = page.getViewport({
             scale: scale
         });
-
-
-        const outputScale = window.devicePixelRatio || 1;
 
 
         const canvas = document.createElement("canvas");
@@ -82,32 +74,22 @@ async function renderPDF() {
         const context = canvas.getContext("2d");
 
 
-        canvas.width = Math.floor(viewport.width * outputScale);
-        canvas.height = Math.floor(viewport.height * outputScale);
-
-
-        canvas.style.width = "100%";
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
 
 
         viewer.appendChild(canvas);
 
 
-        const transform = outputScale !== 1
-            ? [outputScale, 0, 0, outputScale, 0, 0]
-            : null;
-
-
         await page.render({
 
             canvasContext: context,
-            viewport: viewport,
-            transform: transform
+            viewport: viewport
 
         }).promise;
 
 
     }
-
 
 }
 
