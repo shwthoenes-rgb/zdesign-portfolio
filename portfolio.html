@@ -2,6 +2,7 @@
 <html lang="de">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -9,38 +10,96 @@
 
 <style>
 
-html, body {
+body {
     margin: 0;
-    padding: 0;
-    height: 100%;
     background: #181818;
 }
 
-.viewer {
+#viewer {
     width: 100%;
-    height: 100vh;
+    max-width: 1400px;
+    margin: auto;
 }
 
-iframe {
+canvas {
+    display: block;
     width: 100%;
-    height: 100vh;
-    border: none;
+    height: auto;
+    margin-bottom: 30px;
 }
 
 </style>
 
 </head>
 
+
 <body>
 
-<div class="viewer">
+<div id="viewer"></div>
 
-<iframe 
-src="portfolio.pdf#view=FitH">
-</iframe>
 
-</div>
+<script type="module">
+
+import * as pdfjsLib from './pdfjs/pdf.mjs';
+
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+'./pdfjs/pdf.worker.mjs';
+
+
+const url = './portfolio.pdf';
+
+const viewer = document.getElementById('viewer');
+
+
+const pdf = await pdfjsLib.getDocument(url).promise;
+
+
+for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+
+
+    const page = await pdf.getPage(pageNumber);
+
+
+    const containerWidth = viewer.clientWidth;
+
+
+    const viewportOriginal = page.getViewport({
+        scale: 1
+    });
+
+
+    const scale = containerWidth / viewportOriginal.width;
+
+
+    const viewport = page.getViewport({
+        scale: scale
+    });
+
+
+    const canvas = document.createElement('canvas');
+
+    const context = canvas.getContext('2d');
+
+
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+
+
+    viewer.appendChild(canvas);
+
+
+    await page.render({
+        canvasContext: context,
+        viewport: viewport
+    }).promise;
+
+
+}
+
+
+</script>
+
 
 </body>
-
 </html>
